@@ -1,0 +1,19 @@
+id: 1
+event: message
+data: Hello World!
+
+: This is a comment that will be ignored by the client.
+
+id: 2
+event: message
+data: Hello World!
+
+event: message
+data: Hello World!
+data: Hello World!
+
+id: 3
+event: message
+data: Hello World!
+
+data: Hello World!

@@ -1,0 +1,21 @@
+{
+  "name": "llm-xml-stream",
+  "description": "A XML parser for output structured, streaming data from LLMs",
+  "author": "ocherry341",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.16.3",
+    "prettier": "^3.6.2",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "htmlparser2": "^10.0.0"
+  }
+}
