@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import xml from '../fixtures/xml-stream.txt?raw';
-import { XMLStream } from './XMLStream';
+import { XMLStream } from './XMLStream.js';
 
 function mockXMLStream() {
   const chunks = xml.split('\n');

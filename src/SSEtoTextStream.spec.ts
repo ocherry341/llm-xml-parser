@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SSEtoTextStream } from './SSEtoTextStream';
+import { SSEtoTextStream } from './SSEtoTextStream.js';
 import sse from '../fixtures/sse.txt?raw';
 
 function mockSSE() {

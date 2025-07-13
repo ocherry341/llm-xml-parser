@@ -1,17 +1,58 @@
 {
-  "name": "llm-xml-stream",
+  "name": "llm-xml-parser",
   "description": "A XML parser for output structured, streaming data from LLMs",
-  "author": "ocherry341",
+  "author": "ocherry341 <ocherry6622@gmail.com>",
   "version": "0.0.1",
-  "main": "index.js",
-  "scripts": {
-    "test": "vitest run"
+  "type": "module",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/commonjs/index.d.ts",
+  "keywords": [
+    "xml",
+    "parser",
+    "llm",
+    "streams"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ocherry341/llm-xml-parser.git"
   },
-  "keywords": [],
   "license": "MIT",
+  "tshy": {
+    "exclude": [
+      "src/**/*.spec.ts"
+    ],
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "build": "tshy"
+  },
   "devDependencies": {
     "@types/node": "^22.16.3",
     "prettier": "^3.6.2",
+    "tshy": "^3.0.2",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },

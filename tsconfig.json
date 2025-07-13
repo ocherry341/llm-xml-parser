@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
+    "moduleResolution": "nodenext",
     "target": "es2019",
     "module": "nodenext",
     "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "declarationMap": false,
+    "sourceMap": false,
     "strict": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
@@ -16,7 +17,6 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
+    "esModuleInterop": true
   }
 }

@@ -20,7 +20,21 @@ A library for parsing structured, streaming XML data from Large Language Models 
 
 ## Installation
 
-> ⚠️ **This project is currently in development.**
+```bash
+npm install llm-xml-parser
+```
+
+## Usage
+
+```typescript
+import { XMLStream } from 'llm-xml-parser';
+
+const stream = someTokenStream.pipeThrough(new XMLStream());
+
+for await (const { path, text } of stream) {
+  console.log(`Path: ${path}, Text: ${text}`);
+}
+```
 
 ## Contributing
 
