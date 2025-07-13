@@ -1,2 +1,3 @@
 export * from './XMLStream.js';
-export * from './SSEtoTextStream.js';
+export * from './transforms/from-openAI.js';
+export * from './transforms/from-SSE.js';

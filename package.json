@@ -2,7 +2,7 @@
   "name": "llm-xml-parser",
   "description": "A XML parser for output structured, streaming data from LLMs",
   "author": "ocherry341 <ocherry6622@gmail.com>",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "main": "./dist/commonjs/index.js",
   "module": "./dist/esm/index.js",
@@ -50,11 +50,16 @@
     "build": "tshy"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.56.0",
     "@types/node": "^22.16.3",
+    "dotenv": "^17.2.0",
+    "openai": "^5.9.0",
     "prettier": "^3.6.2",
     "tshy": "^3.0.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "zod": "^3.25.76"
   },
   "dependencies": {
     "htmlparser2": "^10.0.0"

@@ -17,10 +17,29 @@ function mockXMLStream() {
 
 describe('XMLStream', () => {
   it('should parse XML messages correctly', async () => {
-    const stream = mockXMLStream().pipeThrough(new XMLStream());
+    const parser = new XMLStream();
+    const stream = mockXMLStream().pipeThrough(parser);
     for await (const chunk of stream) {
-      expect(Array.isArray(chunk.paths)).toBe(true);
+      expect(Array.isArray(chunk.path)).toBe(true);
       expect(chunk.text.includes('<') || chunk.text.includes('>')).toBe(false);
     }
+  });
+
+  describe('getPath', () => {
+    it('should return paths with array indexes', () => {
+      const parser = new XMLStream();
+      const tagStack = ['ROOT', 'foo', 'bar', 'baz'];
+      const arrayIndexes = new Map<string, number>([['ROOT/foo/bar', 1]]);
+      const path = (parser as any).getPath(tagStack, arrayIndexes);
+      expect(path).toEqual(['foo', 'bar', 1, 'baz']);
+    });
+
+    it('should return paths without array indexes', () => {
+      const parser = new XMLStream();
+      const tagStack = ['ROOT', 'foo', 'bar', 'baz'];
+      const arrayIndexes = new Map<string, number>();
+      const path = (parser as any).getPath(tagStack, arrayIndexes);
+      expect(path).toEqual(['foo', 'bar', 'baz']);
+    });
   });
 });

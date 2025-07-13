@@ -1,4 +1,4 @@
-# LLM XML Stream Parser
+# LLM XML Parser
 
 A library for parsing structured, streaming XML data from Large Language Models (LLMs). This library provides efficient stream processing capabilities for real-time XML parsing and Server-Sent Events (SSE) handling.
 
@@ -28,15 +28,71 @@ npm install llm-xml-parser
 
 ## Usage
 
+`llm-xml-parser` accept a text stream with some XML tags and returns structured streaming output.
+
+### Transform to Text Stream
+
+Some built-in functions are provided to transform the input stream to text stream.
+
+#### Server-Sent Events (SSE)
+
+```typescript
+import { fromSSE } from 'llm-xml-parser';
+
+const res = await fetch('https://example.com/sse-endpoint');
+
+/*
+Ensure the response is a valid SSE stream, e.g.
+
+if (!res.ok || !res.body) {
+  throw new Error('Failed to fetch SSE stream');
+}
+if (!res.headers.get('content-type')?.includes('text/event-stream')) {
+  throw new Error('Response is not a valid SSE stream');
+}
+*/
+
+const textStream = fromSSE(res.body);
+```
+
+#### OpenAI Library
+
+```typescript
+import { fromOpenAI } from 'llm-xml-parser';
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const openaiStream = await client.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
+  stream: true,
+});
+
+const textStream = fromOpenAI(openaiStream, {
+  get: (item) => item.choices[0]?.delta?.content,
+});
+```
+
+### Parse to Structured data
+
 ```typescript
 import { XMLStream } from 'llm-xml-parser';
 
-const stream = someTokenStream.pipeThrough(new XMLStream());
+const stream = textStream.pipeThrough(new XMLStream());
 
 for await (const { path, text } of stream) {
   console.log(`Path: ${path}, Text: ${text}`);
 }
 ```
+
+
 
 ## Contributing
 

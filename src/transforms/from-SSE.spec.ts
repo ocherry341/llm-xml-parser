@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { SSEtoTextStream } from './SSEtoTextStream.js';
-import sse from '../fixtures/sse.txt?raw';
+import { fromSSE } from './from-SSE.js';
+import sse from '../../fixtures/sse.txt?raw';
 
 function mockSSE() {
   return new ReadableStream<Uint8Array>({
@@ -13,9 +13,9 @@ function mockSSE() {
   });
 }
 
-describe('SSEtoTextStream', () => {
+describe('from-sse', () => {
   it('should transform SSE data to text stream', async () => {
-    const stream = mockSSE().pipeThrough(new SSEtoTextStream());
+    const stream = fromSSE(mockSSE());
     for await (const text of stream) {
       expect(text).toBe('Hello World!');
     }

@@ -1,15 +1,31 @@
 import { Parser } from 'htmlparser2';
 
 interface XMLOutput {
-  paths: string[];
+  path: (string | number)[];
   text: string;
 }
 
+export interface XMLStreamOptions {
+  mode?: 'token' | 'partial' | 'complete';
+  /**
+   * Determines if a tag is an array
+   * @param tagName current tag name
+   * @param tagStack current tag stack
+   * @returns true if the tag is an array, false otherwise
+   */
+  isArray?: (tagName: string, tagStack: string[]) => boolean;
+}
+
 export class XMLStream extends TransformStream<string, XMLOutput> {
-  constructor() {
+  public data: any = {};
+
+  constructor(options: XMLStreamOptions = {}) {
+    const { mode = 'token', isArray = () => false } = options;
     const ROOT_TAG = 'INTERNAL_ROOT';
+
+    const arrayIndexes = new Map<string, number>();
     const tagStack: string[] = [];
-    let prevPaths: string[] = [];
+    let prevTagStack: string[] = [];
     let count = 0;
 
     let buffer: string[] = [];
@@ -22,16 +38,22 @@ export class XMLStream extends TransformStream<string, XMLOutput> {
 
     const parser = new Parser(
       {
-        onopentag(name) {
-          prevPaths = tagStack.join().split(',');
+        onopentag: (name) => {
+          prevTagStack = tagStack.join('/').split('/');
           tagStack.push(name);
           tagEnd = parser.endIndex; // index of the '>'
           tagStart = parser.endIndex - name.length - 1; // index of the '<'
           shouldSeparate = true;
+
+          const _isArray = isArray(name, tagStack.slice(1));
+          if (_isArray) {
+            const key = tagStack.join('/');
+            arrayIndexes.set(key, (arrayIndexes.get(key) ?? -1) + 1);
+          }
         },
         onclosetag(name) {
           if (tagStack[tagStack.length - 1] === name) {
-            prevPaths = tagStack.join().split(',');
+            prevTagStack = tagStack.join('/').split('/');
             tagStack.pop();
           }
           tagEnd = parser.endIndex; // index of the '>'
@@ -82,10 +104,13 @@ export class XMLStream extends TransformStream<string, XMLOutput> {
         // separate xml tag from current chunk
         if (shouldSeparate) {
           const prev = chunkToWrite.slice(0, chunkToWrite.length - count + tagStart);
+          const path = this.getPath(prevTagStack, arrayIndexes);
           if (prev) {
-            controller.enqueue({
-              paths: prevPaths.slice(1),
-              text: prev,
+            this.emit({
+              mode,
+              controller,
+              path: path,
+              chunk: prev,
             });
           }
           chunkToWrite = chunkToWrite.slice(
@@ -95,9 +120,12 @@ export class XMLStream extends TransformStream<string, XMLOutput> {
         }
 
         if (chunkToWrite) {
-          controller.enqueue({
-            paths: tagStack.slice(1),
-            text: chunkToWrite,
+          const path = this.getPath(tagStack, arrayIndexes);
+          this.emit({
+            mode,
+            controller,
+            path: path,
+            chunk: chunkToWrite,
           });
         }
       },
@@ -109,5 +137,42 @@ export class XMLStream extends TransformStream<string, XMLOutput> {
         parser.end();
       },
     });
+  }
+
+  private emit({
+    mode,
+    controller,
+    path,
+    chunk,
+  }: {
+    mode: 'token' | 'partial' | 'complete';
+    controller: TransformStreamDefaultController<XMLOutput>;
+    path: (string | number)[];
+    chunk: string;
+  }) {
+    if (mode === 'token') {
+      controller.enqueue({
+        path: path,
+        text: chunk,
+      });
+      return;
+    }
+
+    throw new Error(`mode "${mode}" is not implemented yet`);
+  }
+
+  // TODO make chunks into object
+  // private append(paths: string[], chunk: string) {}
+
+  private getPath(tagStack: string[], arrayIndexes: Map<string, number>) {
+    const result: (string | number)[] = [];
+    for (const tag of tagStack) {
+      result.push(tag);
+      const key = result.join('/');
+      if (arrayIndexes.has(key)) {
+        result.push(arrayIndexes.get(key)!);
+      }
+    }
+    return result.slice(1);
   }
 }
