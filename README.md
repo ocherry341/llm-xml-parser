@@ -20,6 +20,8 @@ A library for parsing structured, streaming XML data from Large Language Models 
 
 ## Installation
 
+> ⚠️ **This project is currently in development.**
+
 ```bash
 npm install llm-xml-parser
 ```
