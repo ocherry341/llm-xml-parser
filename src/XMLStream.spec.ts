@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeEach } from 'vitest';
 import xml from '../fixtures/xml-stream.txt?raw';
 import { XMLStream } from './XMLStream.js';
 
@@ -43,7 +43,7 @@ describe('XMLStream', () => {
         expect(chunk.lastTag).toBeDefined();
         // TODO check data
         expect(chunk.data).toBeDefined();
-        console.log(chunk.data);
+        // console.log(JSON.stringify(chunk, null, 2));
       }
     });
   });
@@ -61,7 +61,7 @@ describe('XMLStream', () => {
         expect(chunk.lastTag).toBeDefined();
         // TODO check data
         expect(chunk.data).toBeDefined();
-        console.log(chunk.data);
+        console.log(JSON.stringify(chunk, null, 2));
       }
     });
   });
@@ -81,6 +81,71 @@ describe('XMLStream', () => {
       const arrayIndexes = new Map<string, number>();
       const path = (parser as any).getPath(tagStack, arrayIndexes);
       expect(path).toEqual(['foo', 'bar', 'baz']);
+    });
+  });
+
+  describe('splitChunk', () => {
+    let splitChunk: (str: string) => { token: string; state: number }[];
+    beforeEach(() => {
+      const parser = new XMLStream();
+      splitChunk = (parser as any).splitChunk.bind(parser);
+    });
+
+    describe('should split chunk by XML tags', () => {
+      it('case 1', () => {
+        const str = '<root><tag>content</tag></root>';
+        expect(splitChunk(str)).toEqual([
+          { token: '<root>', state: 2 },
+          { token: '<tag>', state: 2 },
+          { token: 'content', state: 2 },
+          { token: '</tag>', state: 2 },
+          { token: '</root>', state: 2 },
+        ]);
+      });
+
+      it('case 2', () => {
+        const str = 'root><tag>content</tag></root';
+        expect(splitChunk(str)).toEqual([
+          { token: 'root>', state: 2 },
+          { token: '<tag>', state: 2 },
+          { token: 'content', state: 2 },
+          { token: '</tag>', state: 2 },
+          { token: '</root', state: 1 },
+        ]);
+      });
+
+      it('case 3', () => {
+        const str = 'content<tag';
+        expect(splitChunk(str)).toEqual([
+          { token: 'content', state: 0 },
+          { token: '<tag', state: 1 },
+        ]);
+      });
+
+      it('case 4', () => {
+        const str = 'content<tag>content</tag><open_';
+        expect(splitChunk(str)).toEqual([
+          { token: 'content', state: 0 },
+          { token: '<tag>', state: 2 },
+          { token: 'content', state: 2 },
+          { token: '</tag>', state: 2 },
+          { token: '<open_', state: 1 },
+        ]);
+      });
+
+      it('case 5', () => {
+        const str = '<tag_open';
+        expect(splitChunk(str)).toEqual([
+          { token: '<tag_open', state: 1 },
+        ]);
+      });
+
+      it('case 6', () => {
+        const str = 'some text with no tags'
+        expect(splitChunk(str)).toEqual([
+          { token: 'some text with no tags', state: 0 }
+        ]);
+      });
     });
   });
 });
