@@ -47,7 +47,8 @@
   ],
   "scripts": {
     "test": "vitest run",
-    "build": "tshy"
+    "build": "tshy",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.56.0",
