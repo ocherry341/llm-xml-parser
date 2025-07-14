@@ -30,7 +30,7 @@ npm install llm-xml-parser
 
 `llm-xml-parser` accept a text stream with some XML tags and returns structured streaming output.
 
-### Transform to Text Stream
+### Input with Text Stream
 
 Some built-in functions are provided to transform the input stream to text stream.
 
@@ -80,18 +80,103 @@ const textStream = fromOpenAI(openaiStream, {
 });
 ```
 
-### Parse to Structured data
+### Output with Structured Streaming Data
 
 ```typescript
 import { XMLStream } from 'llm-xml-parser';
 
-const stream = textStream.pipeThrough(new XMLStream());
+const stream = textStream.pipeThrough(new XMLStream({ mode: 'chunk' }));
 
-for await (const { path, text } of stream) {
-  console.log(`Path: ${path}, Text: ${text}`);
+for await (const { path, chunk } of stream) {
+  console.log(`Path: ${path}, Chunk: ${chunk}`);
 }
 ```
 
+`llm-xml-parser` provides 3 different output modes
+
+#### `chunk`
+
+The parser emits text chunks like llm output, but with additional xml path information. 
+
+```plain
+{"state": "chunk", "path": ["thinking"], "chunk": "The user "}
+{"state": "chunk", "path": ["thinking"], "chunk": "is asking for "}
+{"state": "chunk", "path": ["thinking"], "chunk": "the current weather "}
+{"state": "chunk", "path": ["thinking"], "chunk": "in New York."}
+{"state": "chunk", "path": ["tool_calls"], "chunk": "print(weather_api"}
+{"state": "chunk", "path": ["tool_calls"], "chunk": ".get_current_weather)"}
+{"state": "chunk", "path": ["tool_output"], "chunk": "The current weather "}
+{"state": "chunk", "path": ["tool_output"], "chunk": "in New York "}
+{"state": "chunk", "path": ["tool_output"], "chunk": "is 75°F "}
+{"state": "chunk", "path": ["tool_output"], "chunk": "with clear skies."}
+```
+
+#### `partial`
+
+The parser emits structured data. Each output will be appended with new content
+
+```json
+{
+  "data": {
+    "thinking": "The user "
+  },
+  "state": "partial",
+  "lastTag": "thinking"
+}
+```
+```json
+{
+  "data": {
+    "thinking": "The user is asking for "
+  },
+  "state": "partial",
+  "lastTag": "thinking"
+}
+```
+```json
+{
+  "data": {
+    "thinking": "The user is asking for the current weather."
+  },
+  "state": "complete",
+  "lastTag": "thinking"
+}
+```
+
+#### `complete`
+
+Like `partial`, but emits only when XML tag is complete
+
+```json
+{
+  "data": {
+    "thinking": "The user is asking for the current weather."
+  },
+  "state": "complete",
+  "lastTag": "thinking"
+}
+```
+```json
+{
+  "data": {
+    "thinking": "The user is asking for the current weather.",
+    "tool_calls": "print(weather_api.get_current_weather (location=\"New York, NY\"))"
+  }
+  "state": "complete",
+  "lastTag": "tool_calls"
+}
+```
+```json
+{
+  "data": {
+    "thinking": "The user is asking for the current weather.",
+    "tool_calls": "print(weather_api.get_current_weather (location=\"New York, NY\"))",
+    "tool_output": "The current weather in New York, NY is 75°F with clear skies."
+  }
+  "state": "complete",
+  "lastTag": "tool_output"
+}
+```
 
 
 ## Contributing
