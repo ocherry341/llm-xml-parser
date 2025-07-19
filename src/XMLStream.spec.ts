@@ -1,26 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import xml from '../fixtures/xml-stream.txt?raw';
 import { XMLStream } from './XMLStream.js';
+import { mockTextStream } from '../test/mock.js';
+import xml from '../test/fixtures/llm-output.xml?raw';
 import path from 'path';
 import fs from 'fs';
 
-function mockXMLStream() {
-  const chunks = xml.split('\n');
-
-  return new ReadableStream<string>({
-    start(controller) {
-      for (const chunk of chunks) {
-        controller.enqueue(chunk);
-      }
-      controller.close();
-    },
-  });
-}
-
 describe('XMLStream', () => {
   it('should parse XML messages correctly', async () => {
-    const parser = new XMLStream();
-    const stream = mockXMLStream().pipeThrough(parser);
+    const parser = new XMLStream({ isArray: (tagName) => tagName === 'option' });
+    const stream = mockTextStream(xml).pipeThrough(parser);
 
     const out = path.resolve('tmp/xml-stream.txt');
     fs.writeFileSync(out, '');

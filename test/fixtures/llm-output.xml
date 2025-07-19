@@ -1,0 +1,10 @@
+The user is asking for the current weather in New York. The `get_weather` tool can be used to retrieve this information. The input to the tool should be "New York".
+
+<tool>
+  <tool_name>get_weather</tool_name>
+  <tool_input>New York</tool_input>
+</tool>
+<suggestions>
+  <option>What is the weather in Paris?</option>
+  <option>What is the weather in London?</option>
+</suggestions>

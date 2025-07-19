@@ -66,7 +66,10 @@ if (!res.headers.get('content-type')?.includes('text/event-stream')) {
 }
 */
 
-const textStream = fromSSE(res.body);
+const textStream = fromSSE(res.body, {
+  // Optional: Customize how to extract text from SSE events
+  get: (event) => event.data,
+});
 ```
 
 #### OpenAI Library
@@ -180,7 +183,7 @@ For example, a llm output like this:
 
 ```xml
 <!-- This is the messages part with index 0 -->
-Let's call a tool to get the weather in Paris.
+The user is asking for the current weather in Paris. I will call the weather tool to get the information.
 
 <!-- This is the data part -->
 <tool_call>
@@ -197,6 +200,12 @@ The weather in Paris is sunny.
 - **Options**
 
 ```typescript
+// XMLStream options
+interface XMLStreamOptions {
+  /** Determines if a tag is an array */
+  isArray?: (tagName: string, tagStack: string[]) => boolean;
+}
+
 // XMLStream output interface
 export interface XMLOutput {
   /** The state of the current output */

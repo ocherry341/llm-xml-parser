@@ -1,26 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import xml from '../fixtures/xml-stream.txt?raw';
 import { XMLTokenStream } from './XMLTokenStream.js';
 import path from 'path';
 import fs from 'fs';
-
-function mockXMLStream() {
-  const chunks = xml.split('\n');
-
-  return new ReadableStream<string>({
-    start(controller) {
-      for (const chunk of chunks) {
-        controller.enqueue(chunk);
-      }
-      controller.close();
-    },
-  });
-}
+import { mockTextStream } from '../test/mock.js';
+import xml from '../test/fixtures/llm-output.xml?raw';
 
 describe('XMLTokenStream', () => {
   it('should parse XML messages correctly', async () => {
-    const parser = new XMLTokenStream();
-    const stream = mockXMLStream().pipeThrough(parser);
+    const parser = new XMLTokenStream({
+      isArray: (tagName) => tagName === 'option',
+    });
+    const stream = mockTextStream(xml).pipeThrough(parser);
 
     const out = path.resolve('tmp/xml-token-stream.txt');
     fs.writeFileSync(out, '');

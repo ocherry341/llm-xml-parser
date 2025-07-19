@@ -3,6 +3,7 @@ package-lock.json
 
 dist
 .tshy
+.tshy-build
 
 .env
 

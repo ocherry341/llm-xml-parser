@@ -9,6 +9,16 @@ export interface XMLOutput {
   last: string | number;
 }
 
+export interface XMLStreamOptions {
+  /**
+   * Determines if a tag is an array
+   * @param tagName current tag name
+   * @param tagStack current tag stack
+   * @returns true if the tag is an array, false otherwise
+   */
+  isArray?: (tagName: string, tagStack: string[]) => boolean;
+}
+
 class XMLAssignStream extends TransformStream<XMLTokenOutput, XMLOutput> {
   public data: any = {};
   public messages: string[] = [];
@@ -21,13 +31,15 @@ class XMLAssignStream extends TransformStream<XMLTokenOutput, XMLOutput> {
       ) => {
         const { path, state, token } = chunk;
         // append data or messages based on the state
-        if (state === 'tag_open' || state === 'tag_close') {
-          append(this.data, path, token);
-        }
+        if (token !== '') {
+          if (state === 'tag_open' || state === 'tag_close') {
+            append(this.data, path, token);
+          }
 
-        if (state === 'message_open' || state === 'message_close') {
-          const msgIndex = path[0] as number;
-          this.messages[msgIndex] = (this.messages[msgIndex] || '') + token;
+          if (state === 'message_open' || state === 'message_close') {
+            const msgIndex = path[0] as number;
+            this.messages[msgIndex] = (this.messages[msgIndex] || '') + token;
+          }
         }
 
         const last = state.startsWith('tag_')
@@ -53,8 +65,8 @@ export class XMLStream {
   public data: any = {};
   public messages: string[] = [];
 
-  constructor() {
-    const tokenStream = new XMLTokenStream();
+  constructor(options: XMLStreamOptions = {}) {
+    const tokenStream = new XMLTokenStream({ isArray: options.isArray });
     const assignStream = new XMLAssignStream();
 
     this.readable = tokenStream.readable.pipeThrough(assignStream);
