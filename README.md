@@ -174,7 +174,7 @@ This parser emits structured data. Each output will be appended with new content
 This parser has two parts of output
 
 - **data**: the structured data in the xml tags
-- **messages**: the text content of the xml tags, with an index indicating the position of whole xml output.
+- **messages**: the text content out of xml tags, with an index indicating the position of whole xml output.
 
 For example, a llm output like this:
 
