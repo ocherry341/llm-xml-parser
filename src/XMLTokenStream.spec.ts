@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import xml from '../fixtures/xml-stream.txt?raw';
-import { XMLStream } from './XMLStream.js';
+import { XMLTokenStream } from './XMLTokenStream.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -17,19 +17,17 @@ function mockXMLStream() {
   });
 }
 
-describe('XMLStream', () => {
+describe('XMLTokenStream', () => {
   it('should parse XML messages correctly', async () => {
-    const parser = new XMLStream();
+    const parser = new XMLTokenStream();
     const stream = mockXMLStream().pipeThrough(parser);
 
-    const out = path.resolve('tmp/xml-stream.txt');
+    const out = path.resolve('tmp/xml-token-stream.txt');
     fs.writeFileSync(out, '');
 
     for await (const chunk of stream) {
-      expect(Array.isArray(chunk.messages)).toBe(true);
-      expect(chunk.data).toBeDefined();
-      expect(chunk.state).toMatch(/tag_|message_/);
-      expect(chunk.last).toBeDefined();
+      expect(Array.isArray(chunk.path)).toBe(true);
+      expect(chunk.token.includes('<') || chunk.token.includes('>')).toBe(false);
       fs.appendFileSync(out, JSON.stringify(chunk) + '\n');
     }
   });

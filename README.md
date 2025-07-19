@@ -20,7 +20,7 @@ A library for parsing structured, streaming XML data from Large Language Models 
 
 ## Installation
 
-> ⚠️ **This project is currently in development.**
+> ⚠️ **This project is currently in early development. The API may be unstable and subject to change.**
 
 ```bash
 npm install llm-xml-parser
@@ -28,11 +28,25 @@ npm install llm-xml-parser
 
 ## Usage
 
-`llm-xml-parser` accept a text stream with some XML tags and returns structured streaming output.
+### Quick Start
+
+```typescript
+import { fromSSE, XMLStream } from 'llm-xml-parser';
+
+const res = await fetch('https://example.com/sse-endpoint');
+
+const textStream = fromSSE(res.body);
+
+const stream = textStream.pipeThrough(new XMLStream());
+
+for await (const chunk of stream) {
+  console.log(chunk);
+}
+```
 
 ### Input with Text Stream
 
-Some built-in functions are provided to transform the input stream to text stream.
+`llm-xml-parser` accepts a readable stream of plain text token. Some built-in functions are provided to transform the input stream to text stream.
 
 #### Server-Sent Events (SSE)
 
@@ -80,101 +94,121 @@ const textStream = fromOpenAI(openaiStream, {
 });
 ```
 
+### Output with Tokens and XML Paths
+
+```typescript
+import { XMLTokenStream } from 'llm-xml-parser';
+
+const stream = textStream.pipeThrough(new XMLTokenStream());
+
+for await (const chunk of stream) {
+  console.log(chunk);
+}
+```
+
+This parser emits text chunks like llm output, but with additional xml path information.
+
+```plain
+{"state":"message_close","token":"","path":[0],"tagStack":[]}
+{"state":"tag_open","token":"The","path":["thinking"],"tagStack":["thinking"]}
+{"state":"tag_open","token":" user is","path":["thinking"],"tagStack":["thinking"]}
+{"state":"tag_open","token":" asking","path":["thinking"],"tagStack":["thinking"]}
+{"state":"tag_open","token":" for the current","path":["thinking"],"tagStack":["thinking"]}
+{"state":"tag_open","token":" weather.","path":["thinking"],"tagStack":["thinking"]}
+{"state":"tag_close","token":"","path":["thinking"],"tagStack":["thinking"]}
+{"state":"message_open","token":"Here is a","path":[1],"tagStack":[]}
+{"state":"message_open","token":" brief pause","path":[1],"tagStack":[]}
+{"state":"message_open","token":" before","path":[1],"tagStack":[]}
+{"state":"message_open","token":" the tool","path":[1],"tagStack":[]}
+{"state":"message_open","token":" is called.","path":[1],"tagStack":[]}
+{"state":"message_close","token":"","path":[1],"tagStack":[]}
+```
+
+- **Options**
+
+```typescript
+// XMLTokenStream options
+interface XMLTokenStreamOptions {
+  /** Determines if a tag is an array */
+  isArray?: (tagName: string, tagStack: string[]) => boolean;
+}
+
+// XMLTokenOutput interface
+interface XMLTokenOutput {
+  /** The state of the current output */
+  state: 'tag_open' | 'tag_close' | 'message_open' | 'message_close';
+  /** The text content of the token */
+  token: string;
+  /** The object path of the token */
+  path: (string | number)[];
+  /** The stack of tags leading to this token */
+  tagStack: string[];
+}
+```
+
+
 ### Output with Structured Streaming Data
 
 ```typescript
 import { XMLStream } from 'llm-xml-parser';
 
-const stream = textStream.pipeThrough(new XMLStream({ mode: 'chunk' }));
+const stream = textStream.pipeThrough(new XMLStream());
 
-for await (const { path, chunk } of stream) {
-  console.log(`Path: ${path}, Chunk: ${chunk}`);
+for await (const chunk of stream) {
+  console.log(chunk);
 }
 ```
 
-`llm-xml-parser` provides 3 different output modes
+This parser emits structured data. Each output will be appended with new content.
 
-#### `chunk`
-
-The parser emits text chunks like llm output, but with additional xml path information. 
-
-```plain
-{"state": "chunk", "path": ["thinking"], "chunk": "The user "}
-{"state": "chunk", "path": ["thinking"], "chunk": "is asking for "}
-{"state": "chunk", "path": ["thinking"], "chunk": "the current weather "}
-{"state": "chunk", "path": ["thinking"], "chunk": "in New York."}
-{"state": "chunk", "path": ["tool_calls"], "chunk": "print(weather_api"}
-{"state": "chunk", "path": ["tool_calls"], "chunk": ".get_current_weather)"}
-{"state": "chunk", "path": ["tool_output"], "chunk": "The current weather "}
-{"state": "chunk", "path": ["tool_output"], "chunk": "in New York "}
-{"state": "chunk", "path": ["tool_output"], "chunk": "is 75°F "}
-{"state": "chunk", "path": ["tool_output"], "chunk": "with clear skies."}
+```
+{"state":"message_close","data":{},"messages":[""],"tagStack":[],"last":0}
+{"state":"tag_open","data":{"thinking":"The"},"messages":[""],"tagStack":["thinking"],"last":"thinking"}
+{"state":"tag_open","data":{"thinking":"The user is"},"messages":[""],"tagStack":["thinking"],"last":"thinking"}
+{"state":"tag_open","data":{"thinking":"The user is asking"},"messages":[""],"tagStack":["thinking"],"last":"thinking"}
+{"state":"tag_open","data":{"thinking":"The user is asking for the current"},"messages":[""],"tagStack":["thinking"],"last":"thinking"}
+{"state":"tag_open","data":{"thinking":"The user is asking for the current weather."},"messages":[""],"tagStack":["thinking"],"last":"thinking"}
+{"state":"tag_close","data":{"thinking":"The user is asking for the current weather."},"messages":[""],"tagStack":["thinking"],"last":"thinking"}
 ```
 
-#### `partial`
+This parser has two parts of output
 
-The parser emits structured data. Each output will be appended with new content
+- **data**: the structured data in the xml tags
+- **messages**: the text content of the xml tags, with an index indicating the position of whole xml output.
 
-```json
-{
-  "data": {
-    "thinking": "The user "
-  },
-  "state": "partial",
-  "lastTag": "thinking"
-}
-```
-```json
-{
-  "data": {
-    "thinking": "The user is asking for "
-  },
-  "state": "partial",
-  "lastTag": "thinking"
-}
-```
-```json
-{
-  "data": {
-    "thinking": "The user is asking for the current weather."
-  },
-  "state": "complete",
-  "lastTag": "thinking"
-}
+For example, a llm output like this:
+
+```xml
+<!-- This is the messages part with index 0 -->
+Let's call a tool to get the weather in Paris.
+
+<!-- This is the data part -->
+<tool_call>
+  <name>getWeather</name>
+  <arguments>
+    <location>Paris</location>
+  </arguments>
+</tool_call>
+
+<!-- This is the messages part with index 1 -->
+The weather in Paris is sunny.
 ```
 
-#### `complete`
+- **Options**
 
-Like `partial`, but emits only when XML tag is complete
-
-```json
-{
-  "data": {
-    "thinking": "The user is asking for the current weather."
-  },
-  "state": "complete",
-  "lastTag": "thinking"
-}
-```
-```json
-{
-  "data": {
-    "thinking": "The user is asking for the current weather.",
-    "tool_calls": "print(weather_api.get_current_weather (location=\"New York, NY\"))"
-  }
-  "state": "complete",
-  "lastTag": "tool_calls"
-}
-```
-```json
-{
-  "data": {
-    "thinking": "The user is asking for the current weather.",
-    "tool_calls": "print(weather_api.get_current_weather (location=\"New York, NY\"))",
-    "tool_output": "The current weather in New York, NY is 75°F with clear skies."
-  }
-  "state": "complete",
-  "lastTag": "tool_output"
+```typescript
+// XMLStream output interface
+export interface XMLOutput {
+  /** The state of the current output */
+  state: 'tag_open' | 'tag_close' | 'message_open' | 'message_close';
+  /** The structured data accumulated so far */
+  data: any;
+  /** The messages accumulated so far */
+  messages: string[];
+  /** The stack of tags leading to this output */
+  tagStack: string[];
+  /** The last tag or message processed */
+  last: string | number;
 }
 ```
 
