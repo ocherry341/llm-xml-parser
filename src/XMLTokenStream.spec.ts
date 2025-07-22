@@ -3,7 +3,7 @@ import { XMLTokenStream } from './XMLTokenStream.js';
 import path from 'path';
 import fs from 'fs';
 import { mockTextStream } from '../test/mock.js';
-import xml from '../test/fixtures/llm-output.xml?raw';
+import xml from '../test/fixtures/llm-output.txt?raw';
 
 describe('XMLTokenStream', () => {
   it('should parse XML messages correctly', async () => {

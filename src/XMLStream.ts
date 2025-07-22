@@ -1,10 +1,22 @@
 import { append } from './utils/append.js';
 import { XMLTokenStream, type XMLTokenOutput } from './XMLTokenStream.js';
 
+export interface XMLTextMessage {
+  type: 'text';
+  content: string;
+}
+
+export interface XMLDataMessage {
+  type: 'data';
+  content: any;
+}
+
+export type XMLMessage = XMLTextMessage | XMLDataMessage;
+
 export interface XMLOutput {
-  state: 'tag_open' | 'tag_close' | 'message_open' | 'message_close';
+  state: 'tag_open' | 'tag_close' | 'message_open' | 'message_close' | 'data_close';
   data: any;
-  messages: string[];
+  messages: XMLMessage[];
   tagStack: string[];
   last: string | number;
 }
@@ -21,7 +33,9 @@ export interface XMLStreamOptions {
 
 class XMLAssignStream extends TransformStream<XMLTokenOutput, XMLOutput> {
   public data: any = {};
-  public messages: string[] = [];
+  public messages: XMLMessage[] = [];
+
+  private index = 0;
 
   constructor() {
     super({
@@ -34,12 +48,32 @@ class XMLAssignStream extends TransformStream<XMLTokenOutput, XMLOutput> {
         if (token !== '') {
           if (state === 'tag_open' || state === 'tag_close') {
             append(this.data, path, token);
+            let message = this.messages[this.index];
+            if (!message) {
+              message = {
+                type: 'data',
+                content: {},
+              };
+            }
+            append(message.content, path, token);
+            this.messages[this.index] = message;
           }
 
           if (state === 'message_open' || state === 'message_close') {
-            const msgIndex = path[0] as number;
-            this.messages[msgIndex] = (this.messages[msgIndex] || '') + token;
+            let message = this.messages[this.index];
+            if (!message) {
+              message = {
+                type: 'text',
+                content: '',
+              };
+            }
+            message.content += token;
+            this.messages[this.index] = message;
           }
+        }
+
+        if (state === 'data_close' || state === 'message_close') {
+          this.index++;
         }
 
         const last = state.startsWith('tag_')
@@ -63,7 +97,7 @@ export class XMLStream {
   public readonly writable: WritableStream<string>;
 
   public data: any = {};
-  public messages: string[] = [];
+  public messages: XMLMessage[] = [];
 
   constructor(options: XMLStreamOptions = {}) {
     const tokenStream = new XMLTokenStream({ isArray: options.isArray });

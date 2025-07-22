@@ -4,7 +4,7 @@ import { splitChunk, STATE } from './utils/split-chunk.js';
 export interface XMLTokenOutput {
   path: (string | number)[];
   token: string;
-  state: 'tag_open' | 'tag_close' | 'message_open' | 'message_close';
+  state: 'tag_open' | 'tag_close' | 'message_open' | 'message_close' | 'data_close';
   tagStack: string[];
 }
 
@@ -27,6 +27,7 @@ export class XMLTokenStream extends TransformStream<string, XMLTokenOutput> {
 
   private closedTag: string = '';
   private closeMessage: boolean = false;
+  private hasMessage: boolean = false;
 
   constructor(options: XMLTokenStreamOptions = {}) {
     const { isArray = () => false } = options;
@@ -49,7 +50,7 @@ export class XMLTokenStream extends TransformStream<string, XMLTokenOutput> {
             return;
           }
 
-          if (this.tagStack.length === 0) {
+          if (this.tagStack.length === 0 && this.hasMessage) {
             this.closeMessage = true;
           }
 
@@ -67,7 +68,7 @@ export class XMLTokenStream extends TransformStream<string, XMLTokenOutput> {
           }
         },
         onclosetag: (name) => {
-          if (name === ROOT_TAG) {
+          if (name === ROOT_TAG && this.hasMessage) {
             this.closeMessage = true;
             return;
           }
@@ -81,7 +82,7 @@ export class XMLTokenStream extends TransformStream<string, XMLTokenOutput> {
             shouldSeparate = true;
           }
 
-          if (this.tagStack.length === 0) {
+          if (this.tagStack.length === 0 && this.hasMessage) {
             this.messageIndex++;
           }
         },
@@ -166,8 +167,12 @@ export class XMLTokenStream extends TransformStream<string, XMLTokenOutput> {
       return;
     }
     const path = this.getPath(prev);
+    const state = this.tagStack.length > 0 ? 'tag_open' : 'message_open';
+    if (state === 'message_open') {
+      this.hasMessage = true;
+    }
     controller.enqueue({
-      state: this.tagStack.length > 0 ? 'tag_open' : 'message_open',
+      state: state,
       token: chunk,
       path: this.tagStack.length > 0 ? path : [this.messageIndex],
       tagStack: prev ? [...this.prevTagStack] : [...this.tagStack],
@@ -183,6 +188,14 @@ export class XMLTokenStream extends TransformStream<string, XMLTokenOutput> {
         tagStack: [...this.prevTagStack],
       });
       this.closedTag = '';
+      if (this.tagStack.length === 0) {
+        controller.enqueue({
+          state: 'data_close',
+          token: '',
+          path: [...this.getPath(), this.closedTag],
+          tagStack: [...this.prevTagStack],
+        });
+      }
     }
     if (this.closeMessage) {
       controller.enqueue({
@@ -192,6 +205,7 @@ export class XMLTokenStream extends TransformStream<string, XMLTokenOutput> {
         tagStack: [],
       });
       this.closeMessage = false;
+      this.hasMessage = false;
     }
   }
 

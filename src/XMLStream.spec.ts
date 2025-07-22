@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { XMLStream } from './XMLStream.js';
 import { mockTextStream } from '../test/mock.js';
-import xml from '../test/fixtures/llm-output.xml?raw';
+import xml from '../test/fixtures/llm-output.txt?raw';
 import path from 'path';
 import fs from 'fs';
 
@@ -16,7 +16,7 @@ describe('XMLStream', () => {
     for await (const chunk of stream) {
       expect(Array.isArray(chunk.messages)).toBe(true);
       expect(chunk.data).toBeDefined();
-      expect(chunk.state).toMatch(/tag_|message_/);
+      expect(chunk.state).toBeOneOf(['tag_open', 'tag_close', 'message_open', 'message_close', 'data_close']);
       expect(chunk.last).toBeDefined();
       fs.appendFileSync(out, JSON.stringify(chunk) + '\n');
     }

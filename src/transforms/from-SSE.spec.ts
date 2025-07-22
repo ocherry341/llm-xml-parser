@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fromSSE } from './from-SSE.js';
-import xml from '../../test/fixtures/llm-output.xml?raw';
+import xml from '../../test/fixtures/llm-output.txt?raw';
 import { mockSSE } from '../../test/mock.js';
 
 describe('from-sse', () => {

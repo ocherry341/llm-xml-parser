@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import OpenAI from 'openai';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { fromOpenAI } from './from-openAI.js';
 
 const prompt = `
@@ -28,12 +28,24 @@ At the end of your response, you can use <suggestions></suggestions> tags to sug
 `;
 
 describe('from-openai', () => {
-  it('should transform OpenAI stream to text stream', async () => {
-    const client = new OpenAI({
-      baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: process.env['OPENROUTER_KEY'],
-    });
+  let client: OpenAI;
 
+  beforeEach(() => {
+    const openrouterKey = process.env['OPENROUTER_API_KEY'];
+    const openaiKey = process.env['OPENAI_API_KEY'];
+    if (openaiKey) {
+      client = new OpenAI({
+        apiKey: openaiKey,
+      });
+    } else if (openrouterKey) {
+      client = new OpenAI({
+        baseURL: 'https://openrouter.ai/api/v1',
+        apiKey: openrouterKey,
+      });
+    }
+  });
+
+  it('should transform OpenAI stream to text stream', async () => {
     const openaiStream = await client.chat.completions.create({
       model: 'google/gemini-2.5-flash',
       messages: [
