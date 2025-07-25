@@ -2,7 +2,7 @@
   "name": "llm-xml-parser",
   "description": "A XML parser for output structured, streaming data from LLMs",
   "author": "ocherry341 <ocherry6622@gmail.com>",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "type": "module",
   "main": "./dist/commonjs/index.js",
   "module": "./dist/esm/index.js",
