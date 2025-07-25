@@ -41,13 +41,11 @@ export function fromSSE(
           buffer = buffer.slice(separatorIndex + 2);
 
           const lines = messageBlock.split('\n');
-          const event = {} as Event;
+          const event = { data: '' } as Event;
           for (const line of lines) {
             if (line.startsWith('data:')) {
               const data = line.slice(5).trim();
-              if (data) {
-                event.data = data;
-              }
+              event.data += data;
               continue;
             }
 
@@ -70,10 +68,8 @@ export function fromSSE(
             }
           }
 
-          if (event.data) {
-            const data = get(event);
-            controller.enqueue(data);
-          }
+          const data = get(event);
+          controller.enqueue(data);
         }
       }
 

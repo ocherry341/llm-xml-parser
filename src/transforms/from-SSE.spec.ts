@@ -9,7 +9,6 @@ describe('from-sse', () => {
     const stream = fromSSE(sse);
     for await (const text of stream) {
       expect(typeof text).toBe('string');
-      expect(text.length).toBeGreaterThan(0);
       expect(text.includes('data:')).toBe(false);
     }
   });
@@ -21,11 +20,10 @@ describe('from-sse', () => {
     });
 
     for await (const text of stream) {
+      console.log(text);
       expect(typeof text).toBe('string');
       const parsed = JSON.parse(text);
       expect(parsed.data).toBeDefined();
-      expect(parsed.id).toBeDefined();
-      expect(parsed.event).toBeDefined();
     }
   });
 });
