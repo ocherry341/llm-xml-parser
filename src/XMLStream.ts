@@ -108,4 +108,21 @@ export class XMLStream {
     this.data = assignStream.data;
     this.messages = assignStream.messages;
   }
+
+  public async parse(input: string) {
+    const dummy = new WritableStream({
+      write: () => {},
+    });
+
+    this.readable.pipeTo(dummy);
+
+    const writer = this.writable.getWriter();
+    await writer.write(input);
+    await writer.close();
+
+    return {
+      data: structuredClone(this.data),
+      messages: structuredClone(this.messages),
+    };
+  }
 }
