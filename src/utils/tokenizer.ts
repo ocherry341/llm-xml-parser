@@ -88,7 +88,28 @@ export enum QuoteType {
   Double = 3,
 }
 
+export interface AttributeEvent {
+  tagName: string;
+  name: string;
+  value: string | null;
+  quote: QuoteType;
+}
+
 export interface Callbacks {
+  onText(text: string): void;
+  onCdata(content: string): void;
+  onComment(content: string): void;
+  onDeclaration(content: string): void;
+  onProcessingInstruction(content: string): void;
+  onOpenTag(tagName: string): void;
+  onOpenTagEnd(tagName: string): void;
+  onAttribute(attribute: AttributeEvent): void;
+  onCloseTag(tagName: string): void;
+  onSelfClosingTag(tagName: string): void;
+  onEnd(): void;
+}
+
+interface InternalCallbacks {
   onattribdata(start: number, endIndex: number): void;
   onattribentity(codepoint: number): void;
   onattribend(quote: QuoteType, endIndex: number): void;
@@ -121,7 +142,7 @@ const Sequences = {
 export default class Tokenizer {
   /** The current state the tokenizer is in. */
   private state = State.Text;
-  /** The read buffer. */
+  /** The read buffer containing unconsumed data. */
   private buffer = '';
   /** The beginning of the section that is currently being read. */
   private sectionStart = 0;
@@ -133,20 +154,157 @@ export default class Tokenizer {
   private baseState = State.Text;
   /** Indicates whether the tokenizer has been paused. */
   public running = true;
-  /** The offset of the current buffer. */
+  /** The offset of the first character stored in the buffer. */
   private offset = 0;
 
   private readonly decodeEntities: boolean;
+  private readonly externalCbs: Callbacks;
+  private readonly cbs: InternalCallbacks;
   private readonly entityDecoder: EntityDecoder;
 
-  constructor(
-    { decodeEntities = true }: { decodeEntities?: boolean },
-    private readonly cbs: Callbacks
-  ) {
+  private textBuffer = '';
+  private currentTagName: string | null = null;
+  private currentAttributeName: string | null = null;
+  private currentAttributeValue = '';
+  private currentAttributeQuote: QuoteType = QuoteType.NoValue;
+
+  constructor({ decodeEntities = true }: { decodeEntities?: boolean }, cbs: Callbacks) {
     this.decodeEntities = decodeEntities;
+    this.externalCbs = cbs;
+    this.cbs = this.createInternalCallbacks();
     this.entityDecoder = new EntityDecoder(xmlDecodeTree, (cp, consumed) =>
       this.emitCodePoint(cp, consumed)
     );
+  }
+
+  private createInternalCallbacks(): InternalCallbacks {
+    return {
+      onattribdata: (start, end) => this.appendAttributeRange(start, end),
+      onattribentity: (codepoint) => this.appendAttributeEntity(codepoint),
+      onattribend: (quote) => this.finalizeAttribute(quote),
+      onattribname: (start, end) => this.startAttribute(this.sliceSection(start, end)),
+      oncdata: (start, end, endOffset) =>
+        this.externalCbs.onCdata(this.sliceWithEndOffset(start, end, endOffset)),
+      onclosetag: (start, end) => this.externalCbs.onCloseTag(this.sliceSection(start, end)),
+      oncomment: (start, end, endOffset) =>
+        this.externalCbs.onComment(this.sliceWithEndOffset(start, end, endOffset)),
+      ondeclaration: (start, end) => this.externalCbs.onDeclaration(this.sliceSection(start, end)),
+      onend: () => {
+        this.flushTextBuffer();
+        this.externalCbs.onEnd();
+      },
+      onopentagend: () => {
+        const tagName = this.currentTagName ?? '';
+        this.externalCbs.onOpenTagEnd(tagName);
+        this.resetAttributeState();
+        this.currentTagName = null;
+      },
+      onopentagname: (start, end) => {
+        const tagName = this.sliceSection(start, end);
+        this.currentTagName = tagName;
+        this.externalCbs.onOpenTag(tagName);
+        this.resetAttributeState();
+      },
+      onprocessinginstruction: (start, end) =>
+        this.externalCbs.onProcessingInstruction(this.sliceSection(start, end)),
+      onselfclosingtag: () => {
+        const tagName = this.currentTagName ?? '';
+        this.externalCbs.onSelfClosingTag(tagName);
+        this.resetAttributeState();
+        this.currentTagName = null;
+      },
+      ontext: (start, end) => this.appendTextRange(start, end),
+      ontextentity: (codepoint) => this.appendTextEntity(codepoint),
+    };
+  }
+
+  private sliceSection(start: number, end: number): string {
+    if (end <= start) {
+      return '';
+    }
+    const localStart = Math.max(0, start - this.offset);
+    const localEnd = Math.max(localStart, end - this.offset);
+    if (localStart >= this.buffer.length) {
+      return '';
+    }
+    return this.buffer.slice(localStart, localEnd);
+  }
+
+  private sliceWithEndOffset(start: number, endIndex: number, endOffset: number): string {
+    const adjustedEnd = endIndex - endOffset;
+    if (adjustedEnd <= start) {
+      return '';
+    }
+    return this.sliceSection(start, adjustedEnd);
+  }
+
+  private appendTextRange(start: number, end: number): void {
+    const chunk = this.sliceSection(start, end);
+    if (chunk) {
+      this.textBuffer += chunk;
+    }
+  }
+
+  private appendTextEntity(codepoint: number): void {
+    this.textBuffer += String.fromCodePoint(codepoint);
+  }
+
+  private flushTextBuffer(): void {
+    if (this.textBuffer.length > 0) {
+      this.externalCbs.onText(this.textBuffer);
+      this.textBuffer = '';
+    }
+  }
+
+  private startAttribute(name: string): void {
+    this.resetAttributeState();
+    if (!name) {
+      return;
+    }
+    this.currentAttributeName = name;
+  }
+
+  private appendAttributeRange(start: number, end: number): void {
+    if (this.currentAttributeName === null) {
+      return;
+    }
+    const chunk = this.sliceSection(start, end);
+    if (chunk) {
+      this.currentAttributeValue += chunk;
+    }
+  }
+
+  private appendAttributeEntity(codepoint: number): void {
+    if (this.currentAttributeName === null) {
+      return;
+    }
+    this.currentAttributeValue += String.fromCodePoint(codepoint);
+  }
+
+  private finalizeAttribute(quote: QuoteType): void {
+    if (this.currentAttributeName === null || this.currentTagName === null) {
+      this.resetAttributeState();
+      return;
+    }
+
+    this.currentAttributeQuote = quote;
+    const hasValue = quote !== QuoteType.NoValue || this.currentAttributeValue.length > 0;
+    const value = hasValue ? this.currentAttributeValue : null;
+
+    this.externalCbs.onAttribute({
+      tagName: this.currentTagName,
+      name: this.currentAttributeName,
+      value,
+      quote,
+    });
+
+    this.resetAttributeState();
+  }
+
+  private resetAttributeState(): void {
+    this.currentAttributeName = null;
+    this.currentAttributeValue = '';
+    this.currentAttributeQuote = QuoteType.NoValue;
   }
 
   public reset(): void {
@@ -156,13 +314,20 @@ export default class Tokenizer {
     this.index = 0;
     this.baseState = State.Text;
     this.currentSequence = undefined!;
+    this.sequenceIndex = 0;
     this.running = true;
     this.offset = 0;
+    this.entityStart = 0;
+    this.textBuffer = '';
+    this.currentTagName = null;
+    this.resetAttributeState();
   }
 
   public write(chunk: string): void {
-    this.offset += this.buffer.length;
-    this.buffer = chunk;
+    if (chunk.length === 0) {
+      return;
+    }
+    this.buffer += chunk;
     this.parse();
   }
 
@@ -185,6 +350,7 @@ export default class Tokenizer {
     if (c === CharCodes.Lt || (!this.decodeEntities && this.fastForwardTo(CharCodes.Lt))) {
       if (this.index > this.sectionStart) {
         this.cbs.ontext(this.sectionStart, this.index);
+        this.flushTextBuffer();
       }
       this.state = State.BeforeTagName;
       this.sectionStart = this.index;
@@ -479,6 +645,7 @@ export default class Tokenizer {
     if (this.running && this.sectionStart !== this.index) {
       if (this.state === State.Text) {
         this.cbs.ontext(this.sectionStart, this.index);
+        this.flushTextBuffer();
         this.sectionStart = this.index;
       } else if (
         this.state === State.InAttributeValueDq ||
@@ -488,6 +655,29 @@ export default class Tokenizer {
         this.cbs.onattribdata(this.sectionStart, this.index);
         this.sectionStart = this.index;
       }
+    }
+  }
+
+  private trimBuffer(): void {
+    let minIndex = this.index;
+
+    if (this.sectionStart !== -1 && this.sectionStart < minIndex) {
+      minIndex = this.sectionStart;
+    }
+
+    if (this.state === State.InEntity && this.entityStart < minIndex) {
+      minIndex = this.entityStart;
+    }
+
+    const removeCount = minIndex - this.offset;
+    if (removeCount > 0) {
+      if (removeCount >= this.buffer.length) {
+        this.buffer = '';
+        this.offset += removeCount;
+        return;
+      }
+      this.buffer = this.buffer.slice(removeCount);
+      this.offset += removeCount;
     }
   }
 
@@ -592,6 +782,7 @@ export default class Tokenizer {
       this.index++;
     }
     this.cleanup();
+    this.trimBuffer();
   }
 
   private finish() {
@@ -601,6 +792,7 @@ export default class Tokenizer {
     }
 
     this.handleTrailingData();
+    this.trimBuffer();
 
     this.cbs.onend();
   }
@@ -637,6 +829,7 @@ export default class Tokenizer {
        */
     } else {
       this.cbs.ontext(this.sectionStart, endIndex);
+      this.flushTextBuffer();
     }
   }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import Tokenizer, { type Callbacks } from './tokenizer.js';
+import Tokenizer, { QuoteType, type AttributeEvent, type Callbacks } from './tokenizer.js';
 
 describe('Tokenizer', () => {
   it('parses llm fixture stream with text and tags', () => {
@@ -11,35 +11,34 @@ describe('Tokenizer', () => {
     const decodedText: string[] = [];
     const openTags: string[] = [];
     const closeTags: string[] = [];
-    const openTagEnds: number[] = [];
+    const openTagEnds: string[] = [];
     const endCount = { value: 0 };
+    const attributes: AttributeEvent[] = [];
 
     const callbacks: Callbacks = {
-      onattribdata: vi.fn(),
-      onattribentity: vi.fn(),
-      onattribend: vi.fn(),
-      onattribname: vi.fn(),
-      oncdata: vi.fn(),
-      onclosetag(start, end) {
-        closeTags.push(xml.slice(start, end));
+      onText(text) {
+        decodedText.push(text);
       },
-      oncomment: vi.fn(),
-      ondeclaration: vi.fn(),
-      onend() {
+      onCdata: vi.fn(),
+      onComment: vi.fn(),
+      onDeclaration: vi.fn(),
+      onProcessingInstruction: vi.fn(),
+      onOpenTag(tagName) {
+        openTags.push(tagName);
+      },
+      onOpenTagEnd(tagName) {
+        openTagEnds.push(tagName);
+      },
+      onAttribute(attr) {
+        attributes.push(attr);
+      },
+      onCloseTag(tagName) {
+        closeTags.push(tagName);
+      },
+      onSelfClosingTag: vi.fn(),
+      onEnd() {
         endCount.value++;
       },
-      onopentagend(endIndex) {
-        openTagEnds.push(endIndex);
-      },
-      onopentagname(start, end) {
-        openTags.push(xml.slice(start, end));
-      },
-      onprocessinginstruction: vi.fn(),
-      onselfclosingtag: vi.fn(),
-      ontext(start, end) {
-        decodedText.push(xml.slice(start, end));
-      },
-      ontextentity: vi.fn(),
     };
 
     const tokenizer = new Tokenizer({ decodeEntities: false }, callbacks);
@@ -67,7 +66,62 @@ describe('Tokenizer', () => {
       'suggestions',
     ]);
 
-    expect(openTagEnds.length).toBe(6);
+    expect(openTagEnds).toEqual(openTags);
+    expect(attributes).toEqual([]);
     expect(endCount.value).toBe(1);
+  });
+
+  it('emits completed attributes with decoded values across chunks', () => {
+    const openTags: string[] = [];
+    const openTagEnds: string[] = [];
+    const attributes: AttributeEvent[] = [];
+    const selfClosing: string[] = [];
+    const emittedText: string[] = [];
+    let endCount = 0;
+
+    const callbacks: Callbacks = {
+      onText(text) {
+        emittedText.push(text);
+      },
+      onCdata: vi.fn(),
+      onComment: vi.fn(),
+      onDeclaration: vi.fn(),
+      onProcessingInstruction: vi.fn(),
+      onOpenTag(tagName) {
+        openTags.push(tagName);
+      },
+      onOpenTagEnd(tagName) {
+        openTagEnds.push(tagName);
+      },
+      onAttribute(attr) {
+        attributes.push(attr);
+      },
+      onCloseTag: vi.fn(),
+      onSelfClosingTag(tagName) {
+        selfClosing.push(tagName);
+      },
+      onEnd() {
+        endCount += 1;
+      },
+    };
+
+    const tokenizer = new Tokenizer({}, callbacks);
+
+    tokenizer.write('<item id="123" foo="bar &');
+    tokenizer.write("amp; baz\" flag data=42 attr='value' />");
+    tokenizer.end();
+
+    expect(openTags).toEqual(['item']);
+    expect(openTagEnds).toEqual([]);
+    expect(selfClosing).toEqual(['item']);
+    expect(emittedText).toEqual([]);
+    expect(endCount).toBe(1);
+    expect(attributes).toEqual([
+      { tagName: 'item', name: 'id', value: '123', quote: QuoteType.Double },
+      { tagName: 'item', name: 'foo', value: 'bar & baz', quote: QuoteType.Double },
+      { tagName: 'item', name: 'flag', value: null, quote: QuoteType.NoValue },
+      { tagName: 'item', name: 'data', value: '42', quote: QuoteType.Unquoted },
+      { tagName: 'item', name: 'attr', value: 'value', quote: QuoteType.Single },
+    ]);
   });
 });
