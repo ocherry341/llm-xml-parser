@@ -287,6 +287,8 @@ This parser emits text chunks like llm output, but with additional xml path info
 {"state":"message_close","token":"","path":[0],"tagStack":[]}
 ```
 
+`XMLTokenStream` is powered by the lightweight tokenizer in `src/utils/tokenizer.ts`, so no DOM-oriented parser is required. The stream stays dependency-light, works in runtimes without `htmlparser2`, and still emits the same incremental structure as the LLM output.
+
 - **Options**
 
 ```typescript

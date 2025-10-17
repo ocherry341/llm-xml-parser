@@ -47,6 +47,7 @@
   ],
   "scripts": {
     "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "build": "tshy",
     "prepare": "npm run build"
   },
@@ -64,7 +65,6 @@
     "zod": "^3.25.76"
   },
   "dependencies": {
-    "entities": "^7.0.0",
-    "htmlparser2": "^10.0.0"
+    "entities": "^7.0.0"
   }
 }
