@@ -1,16 +1,28 @@
 const MIN_LENGTH = 5;
 const MAX_LENGTH = 10;
 
-function random() {
-  return Math.floor(Math.random() * (MAX_LENGTH - MIN_LENGTH + 1)) + MIN_LENGTH;
+function createLengthGenerator(seed: number, min: number, max: number) {
+  let state = seed >>> 0;
+
+  const nextRandom = () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 2 ** 32;
+  };
+
+  return function nextLength() {
+    const r = nextRandom();
+    return Math.floor(r * (max - min + 1)) + min;
+  };
 }
 
 function breakString(str: string): string[] {
+  const nextLength = createLengthGenerator(42, MIN_LENGTH, MAX_LENGTH);
+
   const parts: string[] = [];
   let currentIndex = 0;
 
   while (currentIndex < str.length) {
-    const partLength = random();
+    const partLength = nextLength();
     const part = str.slice(currentIndex, currentIndex + partLength);
     parts.push(part);
     currentIndex += partLength;

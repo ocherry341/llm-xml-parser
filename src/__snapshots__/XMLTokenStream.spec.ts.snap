@@ -1,0 +1,378 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`XMLTokenStream > should parse XML messages correctly 1`] = `
+[
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_open",
+    "tagStack": [],
+    "token": "The us",
+  },
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_open",
+    "tagStack": [],
+    "token": "er is",
+  },
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_open",
+    "tagStack": [],
+    "token": " asking ",
+  },
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_open",
+    "tagStack": [],
+    "token": "for th",
+  },
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_open",
+    "tagStack": [],
+    "token": "e curre",
+  },
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_open",
+    "tagStack": [],
+    "token": "nt we",
+  },
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_open",
+    "tagStack": [],
+    "token": "ather i",
+  },
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_open",
+    "tagStack": [],
+    "token": "n New",
+  },
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_open",
+    "tagStack": [],
+    "token": " York.
+
+",
+  },
+  {
+    "path": [
+      0,
+    ],
+    "state": "message_close",
+    "tagStack": [],
+    "token": "",
+  },
+  {
+    "path": [
+      "tool",
+      "tool_name",
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_name",
+    ],
+    "token": "ge",
+  },
+  {
+    "path": [
+      "tool",
+      "tool_name",
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_name",
+    ],
+    "token": "t_weath",
+  },
+  {
+    "path": [
+      "tool",
+      "tool_name",
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_name",
+    ],
+    "token": "er",
+  },
+  {
+    "path": [
+      "tool",
+      "tool_name",
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "tool",
+      "tool_name",
+    ],
+    "token": "",
+  },
+  {
+    "path": [
+      "tool",
+      "tool_input",
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_input",
+    ],
+    "token": "Ne",
+  },
+  {
+    "path": [
+      "tool",
+      "tool_input",
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_input",
+    ],
+    "token": "w Yor",
+  },
+  {
+    "path": [
+      "tool",
+      "tool_input",
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_input",
+    ],
+    "token": "k",
+  },
+  {
+    "path": [
+      "tool",
+      "tool_input",
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "tool",
+      "tool_input",
+    ],
+    "token": "",
+  },
+  {
+    "path": [
+      "tool",
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "tool",
+    ],
+    "token": "",
+  },
+  {
+    "path": [
+      "",
+    ],
+    "state": "data_close",
+    "tagStack": [
+      "tool",
+    ],
+    "token": "",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      0,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": "What",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      0,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": " is th",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      0,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": "e weather ",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      0,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": "in Paris?",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": "",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      1,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": "W",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      1,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": "hat i",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      1,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": "s the",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      1,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": " weather",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      1,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": " in Londo",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+      1,
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": "n?",
+  },
+  {
+    "path": [
+      "suggestions",
+      "option",
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+    "token": "",
+  },
+  {
+    "path": [
+      "suggestions",
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "suggestions",
+    ],
+    "token": "",
+  },
+  {
+    "path": [
+      "",
+    ],
+    "state": "data_close",
+    "tagStack": [
+      "suggestions",
+    ],
+    "token": "",
+  },
+]
+`;

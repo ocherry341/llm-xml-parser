@@ -1,0 +1,1090 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`XMLStream > should parse XML messages correctly 1`] = `
+[
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The us",
+        "type": "text",
+      },
+    ],
+    "state": "message_open",
+    "tagStack": [],
+  },
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The user is",
+        "type": "text",
+      },
+    ],
+    "state": "message_open",
+    "tagStack": [],
+  },
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The user is asking ",
+        "type": "text",
+      },
+    ],
+    "state": "message_open",
+    "tagStack": [],
+  },
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The user is asking for th",
+        "type": "text",
+      },
+    ],
+    "state": "message_open",
+    "tagStack": [],
+  },
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The user is asking for the curre",
+        "type": "text",
+      },
+    ],
+    "state": "message_open",
+    "tagStack": [],
+  },
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The user is asking for the current we",
+        "type": "text",
+      },
+    ],
+    "state": "message_open",
+    "tagStack": [],
+  },
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The user is asking for the current weather i",
+        "type": "text",
+      },
+    ],
+    "state": "message_open",
+    "tagStack": [],
+  },
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New",
+        "type": "text",
+      },
+    ],
+    "state": "message_open",
+    "tagStack": [],
+  },
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+    ],
+    "state": "message_open",
+    "tagStack": [],
+  },
+  {
+    "data": {},
+    "last": 0,
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+    ],
+    "state": "message_close",
+    "tagStack": [],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_name": "ge",
+      },
+    },
+    "last": "tool_name",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_name": "ge",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_name",
+    ],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_name": "get_weath",
+      },
+    },
+    "last": "tool_name",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_name": "get_weath",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_name",
+    ],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "tool_name",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_name",
+    ],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "tool_name",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "tool",
+      "tool_name",
+    ],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_input": "Ne",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "tool_input",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "Ne",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_input",
+    ],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_input": "New Yor",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "tool_input",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New Yor",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_input",
+    ],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "tool_input",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "tool",
+      "tool_input",
+    ],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "tool_input",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "tool",
+      "tool_input",
+    ],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "tool",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "tool",
+    ],
+  },
+  {
+    "data": {
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "data_close",
+    "tagStack": [
+      "tool",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is th",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is th",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather ",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather ",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+          "W",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+              "W",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+          "What i",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+              "What i",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+          "What is the",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+              "What is the",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+          "What is the weather",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+              "What is the weather",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+          "What is the weather in Londo",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+              "What is the weather in Londo",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+          "What is the weather in London?",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+              "What is the weather in London?",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_open",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+          "What is the weather in London?",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "option",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+              "What is the weather in London?",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "suggestions",
+      "option",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+          "What is the weather in London?",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "suggestions",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+              "What is the weather in London?",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "tag_close",
+    "tagStack": [
+      "suggestions",
+    ],
+  },
+  {
+    "data": {
+      "suggestions": {
+        "option": [
+          "What is the weather in Paris?",
+          "What is the weather in London?",
+        ],
+      },
+      "tool": {
+        "tool_input": "New York",
+        "tool_name": "get_weather",
+      },
+    },
+    "last": "",
+    "messages": [
+      {
+        "content": "The user is asking for the current weather in New York.
+
+",
+        "type": "text",
+      },
+      {
+        "content": {
+          "tool": {
+            "tool_input": "New York",
+            "tool_name": "get_weather",
+          },
+        },
+        "type": "data",
+      },
+      {
+        "content": {
+          "suggestions": {
+            "option": [
+              "What is the weather in Paris?",
+              "What is the weather in London?",
+            ],
+          },
+        },
+        "type": "data",
+      },
+    ],
+    "state": "data_close",
+    "tagStack": [
+      "suggestions",
+    ],
+  },
+]
+`;

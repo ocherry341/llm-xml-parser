@@ -83,7 +83,7 @@ class XMLAssignStream extends TransformStream<XMLTokenOutput, XMLOutput> {
         controller.enqueue({
           state,
           data: structuredClone(this.data),
-          messages: [...this.messages],
+          messages: structuredClone(this.messages),
           tagStack: chunk.tagStack,
           last: last,
         });
