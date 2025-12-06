@@ -166,7 +166,6 @@ export default class Tokenizer {
   private currentTagName: string | null = null;
   private currentAttributeName: string | null = null;
   private currentAttributeValue = '';
-  private currentAttributeQuote: QuoteType = QuoteType.NoValue;
 
   constructor({ decodeEntities = true }: { decodeEntities?: boolean }, cbs: Callbacks) {
     this.decodeEntities = decodeEntities;
@@ -287,7 +286,6 @@ export default class Tokenizer {
       return;
     }
 
-    this.currentAttributeQuote = quote;
     const hasValue = quote !== QuoteType.NoValue || this.currentAttributeValue.length > 0;
     const value = hasValue ? this.currentAttributeValue : null;
 
@@ -304,7 +302,6 @@ export default class Tokenizer {
   private resetAttributeState(): void {
     this.currentAttributeName = null;
     this.currentAttributeValue = '';
-    this.currentAttributeQuote = QuoteType.NoValue;
   }
 
   public reset(): void {
