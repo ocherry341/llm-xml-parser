@@ -19,11 +19,12 @@ describe('from-sse', () => {
       get: (event) => JSON.stringify(event),
     });
 
-    for await (const text of stream) {
-      console.log(text);
-      expect(typeof text).toBe('string');
-      const parsed = JSON.parse(text);
-      expect(parsed.data).toBeDefined();
+    const events: any[] = [];
+
+    for await (const chunk of stream) {
+      events.push(chunk);
     }
+
+    expect(events).toMatchSnapshot();
   });
 });

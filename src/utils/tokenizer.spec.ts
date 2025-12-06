@@ -1,12 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import fs from 'node:fs';
-import path from 'node:path';
 import Tokenizer, { QuoteType, type AttributeEvent, type Callbacks } from './tokenizer.js';
+import xml from '../../test/fixtures/llm-output.txt?raw';
 
 describe('Tokenizer', () => {
   it('parses llm fixture stream with text and tags', () => {
-    const fixturePath = path.resolve('test/fixtures/llm-output.txt');
-    const xml = fs.readFileSync(fixturePath, 'utf8');
 
     const decodedText: string[] = [];
     const openTags: string[] = [];
